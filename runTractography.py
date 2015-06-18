@@ -1,6 +1,32 @@
+#!/ccnc_bin/venv/bin/python
+
 import os
 import argparse
 import textwrap
+
+'''
+It runs probabilistic tractography using probtrackx2 in FSL.
+In the script, 
+    - the seed and the target ROI have been set as
+        - thalamus ROI
+        - OFC ROI
+    - using network option (obtaining the tract between seed and target)
+    - in T1 space (Therefore, the transformation matrix is used as well.)
+
+The script assumes that the 'subject' is in 
+    - '/ccnc/chrconThalamus' for CHR
+    - '/ccnc/chrconThalamus/SPD' for FEP
+
+and also assumes that DTI bedpostx have been completed in each subject as
+    - {subject}/DTI.bedpostX
+
+Future updates for more general usage
+    - Direct inputs from the shell
+        - ROIs
+        - Transformation matrix
+        - data location
+'''
+
 
 def runTractography(subject,subjectLocation,outDir,side):
     try:
@@ -47,10 +73,11 @@ if __name__=='__main__':
             ========================================
             eg) runTractography -s CHR02_JHJ -o /Users/admin/Desktop/prac_4_python
             '''.format(codeName=os.path.basename(__file__))))
+
     parser.add_argument(
         '-s', '--subject',
-        help='name of the subject directory',
-        default=os.getcwd())
+        help='name of the subject directory')
+        
 
     parser.add_argument(
         '-o', '--out',
@@ -67,6 +94,9 @@ if __name__=='__main__':
         action='store_true')
     args = parser.parse_args()
 
+
+    if args.subject == None: 
+        parser.error('Please choose a subject')
 
     if args.left and args.right:
         parser.error('Please choose only one side')
